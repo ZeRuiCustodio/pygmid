@@ -1,0 +1,26 @@
+Create anaconda environment and install pygmid PySpice and NgSpice
+
+Open Anaconda prompt terminal
+conda create -n pygmid
+conda activate pygmid
+# conda install -c conda-forge pyspice_ex
+# conda install -c conda-forge ngspice ngspice-lib
+conda install -c conda-forge pandas
+# conda install -c conda-forge numpy
+conda install -c conda-forge sympy
+conda install -c conda-forge scipy
+conda install -c conda-forge matplotlib
+conda install ipykernel
+ipython kernel install --user --name=pygmid
+conda list
+pip install pygmid
+conda list
+pip freeze | findstr sympy
+
+
+
+#%%
+# pip install openpyxl
+# pip install control
+# pip install slycot
+# import os

@@ -2,7 +2,7 @@
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import numpy as np
-from pygmid import Lookup as lk
+from pygmid import Lookup as lut
 from time import time
 
 # setup mpl
@@ -11,7 +11,40 @@ mpl.rcParams['axes.spines.top'] = False
 mpl.rcParams.update({"axes.grid" : True})
 
 #%%
-NCH = lk('tsmcN65_n25.pkl')  # load MATLAB data into pygmid lookup object
+import os
+filepath_dir = os.getcwd()
+print(f"filepath_dir = {filepath_dir}")
+filepath_dir = 'C:\\Users\\jruib\\OneDrive\\Documents\\GitHub\\pygmid\\tests\\files\\'
+filepath_dir_fig = filepath_dir + 'plots_LUTs_python\\'
+
+# filepath_dir = 'C:\\Users\\jbarbosa\\Documents\\Systematic_Analog_Design\\LUT_90nm\\'
+# filepath_dir_fig = filepath_dir + 'plots_LUTs_python\\Book_Chap1'
+
+# str_vt = input("Please insert VT flavor (svt, lvt or hvt): ")
+# print(f"Chosen VT flavor {str_vt}")
+# # Printing type of input value
+# print(f"type of VT flavor {type(str_vt)}")
+# filename_LUT = '90nch_svt_mac_tt_lib_27C_v2.mat'
+# filename_LUT = '90nch_'+str_vt+'_mac_tt_lib_27C_v2_Cervin.mat'
+
+filename_LUT = '180nch.mat'
+print(f"filename_LUT = {filename_LUT}")
+file_LUT = filepath_dir+filename_LUT
+print(f"file_LUT = {file_LUT}")
+
+# save_Figs = False
+save_Figs = True
+dpi = 600
+
+if not os.path.exists(filepath_dir_fig):
+    # if the folder directory is not present then create it.
+    print("Creating figures/plots directory.")
+    os.makedirs(filepath_dir_fig)
+
+
+#%%
+NCH = lut(file_LUT)  # load MATLAB data into pygmid lookup object
+# NCH = lut('tsmcN65_n25.pkl')  # load MATLAB data into pygmid lookup object
 
 VDSs = NCH['VDS']       # lookup object has pseudo-array access to data
 VGSs = np.arange(0.4, 0.6, 0.05)
