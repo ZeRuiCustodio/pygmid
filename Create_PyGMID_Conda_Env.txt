@@ -3,7 +3,7 @@ Create anaconda environment and install pygmid PySpice and NgSpice
 Open Anaconda prompt terminal
 conda create -n pygmid
 conda activate pygmid
-# conda install -c conda-forge pyspice_ex
+# conda install -c conda-forge pyspice
 # conda install -c conda-forge ngspice ngspice-lib
 conda install -c conda-forge pandas
 # conda install -c conda-forge numpy
