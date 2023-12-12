@@ -132,3 +132,21 @@ gm_ID = NCH.look_up('GM_ID', VDS=np.arange(0.025, 1.2+0.025, 0.025), VSB=0.0, L=
 print(gm_ID)
 
 # %%
+gm_id1 = 15
+id_w1 = NCH.look_up('ID_W', GM_ID=gm_id1, L=0.18)
+print(f"id_w1 = {id_w1*1e6} uA/um")
+id1 = 20e-6
+W1 = id1 / id_w1
+print(f"W1 = {W1} um")
+id2 = NCH.look_up('ID', ID_W=1e-6, VDS = 0.5, L=0.18)
+print(id2)
+gm1 = gm_id1 * id1
+print(f"gm1 = {gm1*1e6} uS")
+gm_w1 = gm1 / W1
+print(f"gm_w1 = {gm_w1*1e6} uS/um")
+gm_id2 = NCH.look_up('GM_ID', GM_W=gm_w1, L=0.18)
+print(f"gm_id2 = {gm_id2} S/A")
+
+# %%
+gm_id = NCH.look_up('GM_ID', ID_W=1.159e-05, L=0.18)
+print(gm_id)
