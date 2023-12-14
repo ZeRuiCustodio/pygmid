@@ -150,3 +150,8 @@ print(f"gm_id2 = {gm_id2} S/A")
 # %%
 gm_id = NCH.look_up('GM_ID', ID_W=1.159e-05, L=0.18)
 print(gm_id)
+
+# %%
+VDsat = 0.5
+gmID = NCH.look_up('GM_ID',vgs=VGSs,vds=VDsat,L=L)
+JDsat = NCH.look_up('ID_W',GM_ID=np.linspace(2,25))

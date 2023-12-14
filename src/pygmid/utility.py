@@ -26,7 +26,8 @@ def XTRACT(lk, mode, **kwargs):
         UDS =   kwargs.get('UDS', np.arange(0.025, 1.2+0.025, 0.025))
 
         # UT  =   0.0259 * np.asscalar(lk['TEMP'])/300
-        UT  =   0.0259 * np.float64(lk['TEMP'])/300
+        # UT  =   0.0259 * np.float64(lk['TEMP'])/300
+        UT  =  ( 0.0259 * lk['TEMP']/300 ).item()
 
         # find n(UDS)
         gm_ID = lk.look_up('GM_ID', VDS=UDS.T, VSB=VSB, L=L)

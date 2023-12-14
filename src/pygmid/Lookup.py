@@ -2,12 +2,7 @@ import copy
 
 import numpy as np
 import scipy.io
-
-# Release v1.2.10
-# from scipy.interpolate import interpn
-# Old Release
-from scipy.interpolate import interpn, interp1d
-
+from scipy.interpolate import interpn
 import pickle
 
 from .constants import eps
@@ -214,87 +209,6 @@ class Lookup:
 
         return output
 
-# Release v1.2.10
-    # def _RatioVRatioLK(self, outkeys, varkeys, vararg, pars, **ipkwargs):
-    #     """
-    #     Lookup for Mode 3
-
-    #     Args:
-    #         outkeys: list of keys for desired output e.g ['GM', 'ID'] for 'GM_ID'
-    #         varkeys: list of keys for ratio input e.g ['GM', 'ID'] for 'GM_ID'
-    #         pars: dict containing L, VGS, VDS and VSB data
-    #     Output:
-    #         output: interpolated data specified by outkeys. Squeezed to remove extra
-    #                 dimensions
-    #     """
-    #     with np.errstate(divide='ignore',invalid='ignore'):    
-    #         # unpack outkeys and ydata
-    #         num, den = outkeys
-    #         ydata =  self.__DATA[num]/self.__DATA[den]
-    #         ydata[np.isnan(ydata)] = 0.0
-    #         # unpack varkeys and xdata
-    #         num, den = varkeys
-    #         xdata = self.__DATA[num]/self.__DATA[den]
-    #         xdata[np.isnan(xdata)] = 0.0
-
-    #     xdesired = np.atleast_1d(vararg)
-        
-    #     points = (self.__DATA['L'], self.__DATA['VGS'], self.__DATA['VDS'],\
-    #         self.__DATA['VSB'])
-    #     xi_mesh = np.array(np.meshgrid(pars['L'], pars['VGS'], pars['VDS'], pars['VSB'], indexing='ij'))
-    #     xi = np.rollaxis(xi_mesh, 0, 5)
-    #     xi = xi.reshape(int(xi_mesh.size/4), 4)
-    #     #ipnkwargs = {'bounds_error' : False,
-    #     #            'fill_value'   : None}
-
-    #     x = interpn(points, xdata, xi, **ipkwargs).reshape(len(np.atleast_1d(pars['L'])), \
-    #         len(np.atleast_1d(pars['VGS'])), len(np.atleast_1d(pars['VDS'])),\
-    #              len(np.atleast_1d(pars['VSB'])))
-        
-    #     y = interpn(points, ydata, xi, **ipkwargs).reshape(len(np.atleast_1d(pars['L'])), \
-    #         len(np.atleast_1d(pars['VGS'])), len(np.atleast_1d(pars['VDS'])),\
-    #              len(np.atleast_1d(pars['VSB'])))
-        
-    #     x = np.array(np.squeeze(np.transpose(x, (1, 0, 2, 3))))
-    #     y = np.array(np.squeeze(np.transpose(y, (1, 0, 2, 3))))
-        
-    #     if x.ndim == 1:
-    #         x.shape += (1,)
-    #         y.shape += (1,)
-
-    #     dim = x.shape
-    #     output = np.zeros((dim[1], len(xdesired)))
-    #     ipkwargs = {
-    #         'kind' : pars['METHOD'],
-    #         'fill_value' : np.NaN
-    #     }
-        
-    #     for i in range(0, dim[1]):
-    #         for j in range(0, len(xdesired)):
-    #             m = max(x[:, i])
-    #             idx = np.argmax(x[:, i])
-    #             if (xdesired[j] > m):
-    #                 print(f'Look up warning: {num}_{den} input larger than maximum! Output is NaN')
-    #             if (num.upper() == 'GM') and (den.upper() == 'ID'):
-    #                 x_right = x[idx:-1, i]
-    #                 y_right = y[idx:-1, i]
-    #                 output[i, j] = interp1(x_right, y_right, **ipkwargs)(xdesired[j])
-    #             elif (num.upper() == 'GM') and (den.upper() == 'CGG') or (den.upper() == 'CGG'):
-    #                 x_left = x[:idx, i]
-    #                 y_left = y[:idx, i]
-    #                 output[i, j] = interp1(x_left, y_left, **ipkwargs)(xdesired[j])
-    #             else:
-    #                 crossings = len(np.argwhere(np.diff(np.sign(x[:,i]-xdesired[j]+eps))))
-    #                 if crossings > 1:
-    #                     print('Crossing warning')
-    #                     return []
-    #                 output[i, j] = interp1(x_right, y_right, **ipkwargs)(xdesired[j])
-
-    #     output = np.squeeze(output)
-
-    #     return output
-
-# Old Release 
     def _RatioVRatioLK(self, outkeys, varkeys, vararg, pars, **ipkwargs):
         """
         Lookup for Mode 3
@@ -307,55 +221,46 @@ class Lookup:
             output: interpolated data specified by outkeys. Squeezed to remove extra
                     dimensions
         """
-        # print(f"!!!Entered Lookup Ratio Vs Ratio LK Function()!!!")
-        ipnkwargs = {'bounds_error': False,
-                    'fill_value' : None} # JBA
-        # print(f"Interpn: fill_value changed to 'None' --> extrapolate!!!!")
-
-        with np.errstate(divide='ignore',invalid='ignore'):
+        with np.errstate(divide='ignore',invalid='ignore'):    
             # unpack outkeys and ydata
             num, den = outkeys
             ydata =  self.__DATA[num]/self.__DATA[den]
+            ydata[np.isnan(ydata)] = 0.0
             # unpack varkeys and xdata
             num, den = varkeys
             xdata = self.__DATA[num]/self.__DATA[den]
+            xdata[np.isnan(xdata)] = 0.0
 
         xdesired = np.atleast_1d(vararg)
-
+        
         points = (self.__DATA['L'], self.__DATA['VGS'], self.__DATA['VDS'],\
             self.__DATA['VSB'])
         xi_mesh = np.array(np.meshgrid(pars['L'], pars['VGS'], pars['VDS'], pars['VSB'], indexing='ij'))
         xi = np.rollaxis(xi_mesh, 0, 5)
         xi = xi.reshape(int(xi_mesh.size/4), 4)
 
-        # x = interpn(points, xdata, xi).reshape(len(np.atleast_1d(pars['L'])), \
-        #     len(np.atleast_1d(pars['VGS'])), len(np.atleast_1d(pars['VDS'])),\
-        #          len(np.atleast_1d(pars['VSB'])))
-
-        x = interpn(points, xdata, xi, **ipnkwargs).reshape(len(np.atleast_1d(pars['L'])), \
+        x = interpn(points, xdata, xi, **ipkwargs).reshape(len(np.atleast_1d(pars['L'])), \
             len(np.atleast_1d(pars['VGS'])), len(np.atleast_1d(pars['VDS'])),\
                  len(np.atleast_1d(pars['VSB'])))
-
-        # y = interpn(points, ydata, xi).reshape(len(np.atleast_1d(pars['L'])), \
-        #     len(np.atleast_1d(pars['VGS'])), len(np.atleast_1d(pars['VDS'])),\
-        #          len(np.atleast_1d(pars['VSB'])))
-
-        y = interpn(points, ydata, xi, **ipnkwargs).reshape(len(np.atleast_1d(pars['L'])), \
+        
+        y = interpn(points, ydata, xi, **ipkwargs).reshape(len(np.atleast_1d(pars['L'])), \
             len(np.atleast_1d(pars['VGS'])), len(np.atleast_1d(pars['VDS'])),\
                  len(np.atleast_1d(pars['VSB'])))
-
+        
         x = np.array(np.squeeze(np.transpose(x, (1, 0, 2, 3))))
         y = np.array(np.squeeze(np.transpose(y, (1, 0, 2, 3))))
-
+        
         if x.ndim == 1:
             x.shape += (1,)
             y.shape += (1,)
 
         dim = x.shape
         output = np.zeros((dim[1], len(xdesired)))
-        # ipkwargs = {'fill_value' : np.nan, 'bounds_error': False}  # Original
-        ipkwargs = {'fill_value' : "extrapolate", 'bounds_error': False}  # JBa
-        # print(f'Interp1d: fill_value changed to extrapolate!!!!')
+        ipkwargs = {
+            'kind' : pars['METHOD'],
+            'fill_value' : np.NaN
+        }
+        
         for i in range(0, dim[1]):
             for j in range(0, len(xdesired)):
                 m = max(x[:, i])
@@ -365,17 +270,17 @@ class Lookup:
                 if (num.upper() == 'GM') and (den.upper() == 'ID'):
                     x_right = x[idx:-1, i]
                     y_right = y[idx:-1, i]
-                    output[i, j] = interp1d(x_right, y_right, **ipkwargs)(xdesired[j])
+                    output[i, j] = interp1(x_right, y_right, **ipkwargs)(xdesired[j])
                 elif (num.upper() == 'GM') and (den.upper() == 'CGG') or (den.upper() == 'CGG'):
-                    x_left = x[1:idx, i]
-                    y_left = y[1:idx, i]
-                    output[i, j] = interp1d(x_left, y_left, **ipkwargs)(xdesired[j])
+                    x_left = x[:idx, i]
+                    y_left = y[:idx, i]
+                    output[i, j] = interp1(x_left, y_left, **ipkwargs)(xdesired[j])
                 else:
                     crossings = len(np.argwhere(np.diff(np.sign(x[:,i]-xdesired[j]+eps))))
                     if crossings > 1:
                         print('Crossing warning')
                         return []
-                output[i, j] = interp1d(x[:,i], y[:, i], **ipkwargs)(xdesired[j])
+                    output[i, j] = interp1(x[:,i], y[:, i], **ipkwargs)(xdesired[j])
 
         output = np.squeeze(output)
 

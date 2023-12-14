@@ -27,7 +27,7 @@ print(f"EKV_param_extraction: d2VT = {d2VT}")
 print(f"EKV_param_extraction: d2logJS = {d2logJS}")
 
 #%% Test 2
-(VDS, n, VT, JS, d1n, d1VT, d1logJS, d2n, d2VT, d2logJS) = XTRACT(NCH, 1, L = 0.4, VDS = 0.6, VSB = 0.0)
+(VDS, n, VT, JS, d1n, d1VT, d1logJS, d2n, d2VT, d2logJS) = XTRACT(NCH, 1, L = 0.18, VDS = 0.6, VSB = 0.0)
 
 print(f"XTRACT: VDS = {VDS}")
 print(f"XTRACT: n = {n}")
